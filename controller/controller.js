@@ -1,16 +1,11 @@
-const db = require('../db/database.js')
-const User = require('../db/models/user.js')
-const model = require('../db/models/user.js')
+const mongoose = require('mongoose')
+const model = require('../db/models/schema')
 
-
-/* const User = mongoose.Schema ({
-    username = String,
-    email = String,
-    salary = Number, 
-    expenses = [{
-        name = String,
-        amount = Number,
-        descript = String
-    }]
-});
-*/
+        //username: String,
+        //email: String,
+        //salary: Number, 
+        //expenses: [{
+        //    name: String,
+        //    amount: Number,
+        //    descript: String
+        //}]
