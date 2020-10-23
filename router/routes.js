@@ -16,10 +16,12 @@ router.get('/register', (req, res) => {
 
 router.post('/register', (req, res, next) => {
     //receive register form, verify and add to DB, 
-    let username = req.body.username
-    let email = req.body.email
-    let password = req.body.cpassword
-    console.log(`${username}, ${email}, ${password}`)
+    let newUserData = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.cpassword
+    }
+    console.log(newUserData)
     next(res.redirect('/'))
 })
 
@@ -41,11 +43,18 @@ router.get('/index', (req, res) => {
 })
 
 router.get('/addex', (req, res) => {
-    res.send('addExpense')
+    res.render('addExpense')
 })
 
-router.post('addex/:data', (req, res) => {
+router.post('/addex', (req, res, next) => {
     // verify data and add to user expense list
+    let expenseData = {
+        name: req.body.name,
+        cost: toString(req.body.cost), 
+        description: req.body.description
+    }
+    console.log(expenseData)
+    next(res.redirect('/'))
 })
 
 
