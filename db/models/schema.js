@@ -1,23 +1,16 @@
 const mongoose = require('mongoose')
 
-const Expense =  mongoose.Schema({
-    name: String, 
-    amount: Number, 
-    descript: String
-});
-
-const expense = mongoose.model('expense', Expense)
-
-const User = mongoose.Schema ({
-    username: String,
+const User = new mongoose.Schema({
+    uname: String,
     email: String,
     salary: Number, 
     expenses: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Expense'
+        name: String,
+        cost: Number,
+        descipt: String
     }]
-});
+})
 
 const user = mongoose.model('user', User)
 
-module.exports = { user: user, expense: expense }
+module.exports = user

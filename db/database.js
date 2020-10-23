@@ -3,7 +3,7 @@ const db = require('mongoose')
 
 // DB connection 
 try {
-    db.connect('mongodb://localhost/spring')
+    db.connect('mongodb://localhost/spring', {useNewUrlParser: true})
     console.log('DB connection successful')
 } catch (err) {
     console.log(
