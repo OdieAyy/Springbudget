@@ -3,6 +3,7 @@ const express = require('express')
 const controller = require('../controller/controller')
 const router = express.Router()
 const bodyParser = require('body-parser')
+const { createSecureServer } = require('http2')
 
 
 router.get('/', (req, res) => {
@@ -21,7 +22,12 @@ router.post('/register', (req, res, next) => {
         email: req.body.email,
         password: req.body.cpassword
     }
-    console.log(newUserData)
+    try{
+        createNewUser()
+    } catch (err){
+        res.redirect('/register')
+        console.log(err)
+    }
     next(res.redirect('/'))
 })
 
@@ -39,7 +45,13 @@ router.post('/login', (req, res, next) => {
 })
 
 router.get('/index', (req, res) => {
-    res.send('index')
+    let userData = await getUserData()
+    let expenseData = await getExpenseData()
+
+    res.render('index', {
+        user: userData,
+        expenses: expenseData
+    })
 })
 
 router.get('/addex', (req, res) => {
@@ -53,7 +65,7 @@ router.post('/addex', (req, res, next) => {
         cost: toString(req.body.cost), 
         description: req.body.description
     }
-    console.log(expenseData)
+    await sendData({expenseData})
     next(res.redirect('/'))
 })
 

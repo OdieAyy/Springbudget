@@ -1,10 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const db = require('./db/database')
-const router = require('./router/routes')
 const port = process.env.NODE_ENV || 3000
+const router = require('./router/routes')
 const bodyParser = require('body-parser')
-const model = require('./db/models/schema')
 const { urlencoded } = require('express')
 const ejs = require('ejs')
 
