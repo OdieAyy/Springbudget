@@ -1,6 +1,6 @@
 const { resolveSrv } = require('dns')
 const express = require('express')
-const controller = require('../controller/controller')
+const controller = require('../controller/dataController')
 const router = express.Router()
 const bodyParser = require('body-parser')
 const { createSecureServer } = require('http2')
@@ -23,7 +23,7 @@ router.post('/register', (req, res, next) => {
         password: req.body.cpassword
     }
     try{
-        createNewUser()
+        createNewUser(newUserData)
     } catch (err){
         res.redirect('/register')
         console.log(err)
@@ -44,28 +44,29 @@ router.post('/login', (req, res, next) => {
     next(res.redirect('/'))
 })
 
-router.get('/index', (req, res) => {
+router.get('/index', async (req, res) => {
     let userData = await getUserData()
-    let expenseData = await getExpenseData()
+    let expenseData = await getExpenses()
 
-    res.render('index', {
-        user: userData,
-        expenses: expenseData
-    })
+    console.log(userData)
+    console.log(expenseData)
+    res.send('Still testing')
+
 })
 
 router.get('/addex', (req, res) => {
     res.render('addExpense')
 })
 
-router.post('/addex', (req, res, next) => {
+// id is for the user.id
+router.post('/addex/:id', async (req, res, next) => {
     // verify data and add to user expense list
     let expenseData = {
         name: req.body.name,
         cost: toString(req.body.cost), 
         description: req.body.description
     }
-    await sendData({expenseData})
+    sendData({expenseData})
     next(res.redirect('/'))
 })
 

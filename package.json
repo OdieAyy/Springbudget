@@ -4,10 +4,13 @@
   "description": "Budget appliation for portfolio ",
   "main": "server.js",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
-    "mongoose": "^5.10.7",
-    "nodemon": "^2.0.4"
+    "mongoose": "^5.10.11",
+    "mysql2": "^2.2.5",
+    "nodemon": "^2.0.4",
+    "sequelize": "^6.3.5"
   },
   "devDependencies": {},
   "scripts": {

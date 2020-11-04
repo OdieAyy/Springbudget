@@ -5,7 +5,7 @@ async function getUserData(id){
 	/*get user data
 	according to thei userID */
 
-	return 0 
+	return {} 
 }
 
 async function createNewUser(obj) {
@@ -16,7 +16,6 @@ async function createNewUser(obj) {
 	}).catch((err) => {
 		console.log(err)
 	})
-	return 0
 };
 
 async function createNewExpense(obj){
@@ -27,6 +26,14 @@ async function createNewExpense(obj){
 	}).catch((err) => {
 		console.log('something went wrong')		
 	}) 
-	return 0
 };
 
+// This gets all expenses - add user ID
+async function getExpenses(){
+	const expensedata = await model.ExpensesModel.find()
+	return expensedata
+}
+
+
+
+module.exports = { createNewExpense, createNewUser, getExpenses, getUserData }
