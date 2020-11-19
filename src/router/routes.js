@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const db = require('../db/config')
 const bodyParser = require('body-parser')
-const { createSecureServer } = require('http2')
 
 // Presentation page contatins to register and login links, and brief of the application
 router.get('/', (req, res) => {
@@ -89,16 +88,22 @@ router.post('/addex', async (req, res, next) => {
     next(res.redirect('/'))
 })
 
-router.delete('/delex/:id', async(req, res, next) => {
+router.get('/del', (req, res) => {
+    res.render('delete')
+})
+
+router.post('/del', async(req, res, next) => {
     // get item to be deleted from http
     
-    let item = req.body.name;
-
-    let data = await db.find( {username: 'TheGreatKhan'} )
-    data.expenes.delete( { name: item })
-    data.save()
-    next(res.send('comepleted'))
-
+    db.expenes.findByIdAndDelete({_id: req.body.id})
+    .then(() => {
+        res.send('Deleted')
+    })
+    .catch(err => {
+        if(err) {
+            res.send('Something went wrong')
+        }
+    })
 })
 
 
