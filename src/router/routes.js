@@ -1,34 +1,41 @@
-const { resolveSrv } = require('dns')
 const express = require('express')
-const controller = require('../controller/dataController')
 const router = express.Router()
+const db = require('../db/config')
 const bodyParser = require('body-parser')
 const { createSecureServer } = require('http2')
 
-
+// Presentation page contatins to register and login links, and brief of the application
 router.get('/', (req, res) => {
-    res.send('Home page')
+    res.send('Home page') 
 })
 
 router.get('/register', (req, res) => {
-    //send register form
+    // send registration form 
     res.render('register')
 })
 
-router.post('/register', (req, res, next) => {
+// recieve registration data and create db entry
+router.post('/register', async (req, res, next) => {
     //receive register form, verify and add to DB, 
-    let newUserData = {
+    let registrationData = {
         username: req.body.username,
         email: req.body.email,
-        password: req.body.cpassword
+        password: req.body.cpassword //cpassword == 'confirmed password'
     }
-    try{
-        createNewUser(newUserData)
-    } catch (err){
-        res.redirect('/register')
-        console.log(err)
-    }
-    next(res.redirect('/'))
+    
+    let register = new db(registrationData)
+    await register.save()
+    .then( data => {
+        if (data) {
+            res.send(data)
+            res.sendStatus(200)
+        }
+    })
+    .catch( error => {
+        if (error) {
+            res.send(`Please note: ${error.message}`)
+        }
+    });
 })
 
 router.get('/login', (req, res) => {
@@ -36,21 +43,29 @@ router.get('/login', (req, res) => {
 })
 
 router.post('/login', (req, res, next) => {
-    //send data to Auth model and redirect to index
+    // send data to Auth model and redirect to index
+    // assign session cookie/tag?? - how?
+
     let username = req.body.username
     let password = req.body.password
+
+    //create cookie or web token for auth
+
 
     console.log(`${username}, ${password}` )    
     next(res.redirect('/'))
 })
 
-router.get('/index', async (req, res) => {
-    let userData = await getUserData()
-    let expenseData = await getExpenses()
 
-    console.log(userData)
-    console.log(expenseData)
-    res.send('Still testing')
+// add user paramter for validation - querying manually does work 
+router.get('/index/:id', async (req, res) => {
+
+    let data = await db.findOne( {username: req.params.id } );
+    if (data.expenses == '') {
+        res.send({msg: 'You have no expenses to show'})
+    } else {
+        res.send(data.expenes)
+    }
 
 })
 
@@ -59,17 +74,32 @@ router.get('/addex', (req, res) => {
 })
 
 // id is for the user.id
-router.post('/addex/:id', async (req, res, next) => {
+router.post('/addex', async (req, res, next) => {
     // verify data and add to user expense list
     let expenseData = {
         name: req.body.name,
-        cost: toString(req.body.cost), 
+        amount: req.body.cost, 
         description: req.body.description
-    }
-    sendData({expenseData})
+    };
+
+    let data = await db.findOne( {username: 'TheGreatKhan'} )
+    data.expenses.push(expenseData)
+    data.save()
+
     next(res.redirect('/'))
 })
 
+router.delete('/delex/:id', async(req, res, next) => {
+    // get item to be deleted from http
+    
+    let item = req.body.name;
+
+    let data = await db.find( {username: 'TheGreatKhan'} )
+    data.expenes.delete( { name: item })
+    data.save()
+    next(res.send('comepleted'))
+
+})
 
 
 module.exports = router

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const express = require('express')
 const port = process.env.NODE_ENV || 3000
-const db = require('./db/database');
 const router = require('./router/routes')
 const bodyParser = require('body-parser')
 const ejs = require('ejs')

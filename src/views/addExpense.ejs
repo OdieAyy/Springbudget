@@ -9,13 +9,21 @@
     <h1>Add Expense:</h1>
     <div>
         <p>Please enter the details regarding your expense below:</p>
-        <form>
-            <label for="name">Name:</label>
-            <input type="text" name="name">
-            <label for="cost">Cost: </label>
-            <input type="text" name="cost">
-            <label for="description">Enter expense description</label>
-            <input type="text" name="description"></form> 
+        <form method="POST" action="/addex">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" name="name">
+            </div>
+            <div>
+                <label for="cost">Cost: </label>
+                <input type="text" name="cost">
+            </div>
+            <div>
+                <label for="description">Enter expense description</label>
+                <input type="text" name="description">
+            </div>
+                <button type="submit">Submit</button> 
         </form>
+    </div>
 </body>
 </html>
