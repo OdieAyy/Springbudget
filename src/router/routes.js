@@ -3,6 +3,7 @@ const router = express.Router()
 const db = require('../db/config')
 const bodyParser = require('body-parser')
 
+
 // Presentation page contatins to register and login links, and brief of the application
 router.get('/', (req, res) => {
     res.send('Home page') 
@@ -56,24 +57,20 @@ router.post('/login', (req, res, next) => {
 })
 
 
-// add user paramter for validation - querying manually does work 
-router.get('/index/:id', async (req, res) => {
+// add user paramter for validation - querying manually does work
 
-    let data = await db.findOne( {username: req.params.id } );
-    if (data.expenses == '') {
-        res.send({msg: 'You have no expenses to show'})
-    } else {
-        res.send(data.expenes)
-    }
-
+router.get('/account', async (req, res) => {
+    let data = await db.findOne({username: 'TheGreatKhan'})
+    console.log(data)
 })
 
-router.get('/addex', (req, res) => {
+
+router.get('/add', (req, res) => {
     res.render('addExpense')
 })
 
 // id is for the user.id
-router.post('/addex', async (req, res, next) => {
+router.post('/add', async (req, res, next) => {
     // verify data and add to user expense list
     let expenseData = {
         name: req.body.name,
@@ -88,22 +85,20 @@ router.post('/addex', async (req, res, next) => {
     next(res.redirect('/'))
 })
 
-router.get('/del', (req, res) => {
-    res.render('delete')
+router.delete('/delete/:id', async(req, res, next) => {
+    
+    let {id} = req.params
+
+
+    next(res.redirect('/account'))
 })
 
-router.post('/del', async(req, res, next) => {
-    // get item to be deleted from http
-    
-    db.expenes.findByIdAndDelete({_id: req.body.id})
-    .then(() => {
-        res.send('Deleted')
-    })
-    .catch(err => {
-        if(err) {
-            res.send('Something went wrong')
-        }
-    })
+router.get('/account/edit', (req, res) => {
+    res.render('expenseEdit')
+})
+
+router.put('/account/edit/:id', async(req, res, next) => {
+    res.send('send it')
 })
 
 

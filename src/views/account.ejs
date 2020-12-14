@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpringBudget</title>
+</head>
+<body>
+    <div>
+        <h1> User: <%= data.username %> </h1>
+    </div>
+    <div>
+        <% data.expenses.forEach(element => { %>
+         <div id='expensesItem'>
+            <h3> <%= element.name %> </h3>
+            <ul>
+                <li>Total in R: <%= element.amount%></li>
+                <li> Description: <%= element.description %></li>
+            </ul>
+            <form action="/delete/<%= element._id %>?_method=DELETE" method="POST">
+                <button>Delete</button>
+            </form>  
+            <form action="/account/edit" method="GET">
+                <button>Edit</button>
+            </form>
+        </div>   
+        <% }); %>
+    </div>
+
+<!--    <script>
+        // add event listener
+
+        //this is an array dude
+        const btns = document.querySelectorAll('button[id^=delButton]');
+        const edit = document.querySelectorAll('button[id^=editButton');
+
+        btns.forEach(btn => {
+            btn.addEventListener('click', deleteThis)
+        });
+
+        edit.forEach( edit => {
+            edit.addEventListener('click', editThis)
+        })
+
+        function deleteThis(){
+            const xhr = new XMLHttpRequest()
+            xhr.onreadystatechange = (() => {
+                if (this.status == 200) {
+                    
+                }
+            })
+            xhr.open('delete', `localhost:3000/${this.value}`, true)
+            xhr.send()
+        }
+
+        function editThis(){
+            console.log(`Clicked`)
+        }
+        
+        
+    </script>
+-->
+
+</body>
+</html>
