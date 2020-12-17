@@ -61,7 +61,7 @@ router.post('/login', (req, res, next) => {
 
 router.get('/account', async (req, res) => {
     let data = await db.findOne({username: 'TheGreatKhan'})
-    console.log(data)
+    res.render('account', {data: data})
 })
 
 
@@ -82,23 +82,43 @@ router.post('/add', async (req, res, next) => {
     data.expenses.push(expenseData)
     data.save()
 
-    next(res.redirect('/'))
+    next(res.redirect('/account'))
 })
 
 router.delete('/delete/:id', async(req, res, next) => {
     
     let {id} = req.params
+    let deleted = await db.findOne({username: 'TheGreatKhan'})
 
+    await deleted.expenses.remove({_id: id})
+    await deleted.save()
 
-    next(res.redirect('/account'))
+    res.redirect('/account')
 })
 
-router.get('/account/edit', (req, res) => {
-    res.render('expenseEdit')
+router.get('/account/edit/:id', (req, res) => {
+    let {id} = req.params
+    console.log(id)
+    res.render('expenseEdit', {data: id})
 })
 
-router.put('/account/edit/:id', async(req, res, next) => {
-    res.send('send it')
+router.post('/account/edit/:id', async(req, res, next) => {
+    
+    let {id} = req.params
+    let _id = ObjectID(id)
+
+    let expenseData = {
+        name: req.body.name,
+        amount: req.body.cost, 
+        description: req.body.description
+    };
+
+    //let item = await db.findById(_id)
+    //console.log(item)
+    //let update = await db.findOneAndUpdate(id, expenseData, {runvalidators: true});
+    //await update.save();
+
+    next(res.redirect('/account'));
 })
 
 
