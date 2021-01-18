@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../db/config')
-const bodyParser = require('body-parser')
-
+const User = require('../db/user');
+const Expense = require('../db/expense');
+const Bcrypt = require('bcrypt')
 
 // Presentation page contatins to register and login links, and brief of the application
 router.get('/', (req, res) => {
@@ -16,52 +16,80 @@ router.get('/register', (req, res) => {
 
 // recieve registration data and create db entry
 router.post('/register', async (req, res, next) => {
-    //receive register form, verify and add to DB, 
-    let registrationData = {
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.cpassword //cpassword == 'confirmed password'
-    }
+    //receive register form, verify and add to DB 
+    let {email, inputPassword, confirmPassword} = req.body
     
-    let register = new db(registrationData)
-    await register.save()
-    .then( data => {
-        if (data) {
-            res.send(data)
-            res.sendStatus(200)
-        }
-    })
-    .catch( error => {
-        if (error) {
-            res.send(`Please note: ${error.message}`)
-        }
-    });
-})
+    if (inputPassword === confirmPassword) {
+
+        let emailInDb = await User.findOne({email: email});
+
+        if (!emailInDb) {
+            
+            let hashed = await Bcrypt.hash(confirmPassword, 9);
+
+            let user = new User({
+                email: req.body.email, 
+                password: hashed
+            });
+            
+            await user.save()
+            .then(() => {
+                console.log('User registered');
+                res.render('login');
+            });
+            
+            return; 
+        
+        } else if (email === emailInDb.email) {
+            
+            res.render('register');
+            console.log('Email already used');
+            
+            return;
+        };
+
+    } else {
+        res.render('register');
+        console.log('Passwords do not match');
+    };
+
+});    
+
 
 router.get('/login', (req, res) => {
     res.render('login')
 })
 
-router.post('/login', (req, res, next) => {
-    // send data to Auth model and redirect to index
-    // assign session cookie/tag?? - how?
+router.post('/login', async (req, res, next) => {
 
-    let username = req.body.username
-    let password = req.body.password
+    let {email, password} = req.body; 
+    let checkIfExists = await User.findOne({email: email});
 
-    //create cookie or web token for auth
+    if (!checkIfExists) {
+        
+        res.render('register');
+        console.log('No user found - please register');
 
+        return;
 
-    console.log(`${username}, ${password}` )    
-    next(res.redirect('/'))
-})
+    } else if (email === checkIfExists.email) {
+        if (await Bcrypt.compare(password, checkIfExists.password)) {
+            res.redirect('/'); // create session before sending user to account
+            console.log('logged in'); 
+            
+        } else {
+            res.render('login');
+            console.log('incorrect password');
+        };
+    };
+
+});
 
 
 // add user paramter for validation - querying manually does work
 
 router.get('/account', async (req, res) => {
-    let data = await db.findOne({username: 'TheGreatKhan'})
-    res.render('account', {data: data})
+     
 })
 
 
@@ -74,13 +102,16 @@ router.post('/add', async (req, res, next) => {
     // verify data and add to user expense list
     let expenseData = {
         name: req.body.name,
-        amount: req.body.cost, 
+        total: req.body.cost, 
         description: req.body.description
     };
 
-    let data = await db.findOne( {username: 'TheGreatKhan'} )
-    data.expenses.push(expenseData)
-    data.save()
+    let user = await UserModel.findOne( {username: 'Adrian'} )
+    expense = await new ExpenseModel(expenseData)
+    await expense.user.push(user)
+    await user.expenses.push(expense)
+    await user.save()
+    await expense.save()
 
     next(res.redirect('/account'))
 })
@@ -88,35 +119,30 @@ router.post('/add', async (req, res, next) => {
 router.delete('/delete/:id', async(req, res, next) => {
     
     let {id} = req.params
-    let deleted = await db.findOne({username: 'TheGreatKhan'})
+    let um = await UserModel.findOne({username: 'Adrian'})
+    let em = await ExpenseModel.findOne({user: um._id})
 
-    await deleted.expenses.remove({_id: id})
-    await deleted.save()
+    await um.expenses.remove({_id: id})
+    await em.user.remove(um._id)
+    await um.save()
+    await em.save()
 
     res.redirect('/account')
 })
 
-router.get('/account/edit/:id', (req, res) => {
-    let {id} = req.params
-    console.log(id)
-    res.render('expenseEdit', {data: id})
+router.get('/account', (req, res) => {
+    res.render('account')
 })
 
-router.post('/account/edit/:id', async(req, res, next) => {
-    
+router.put('/account/:id', async(req, res, next) => {
+
+
     let {id} = req.params
-    let _id = ObjectID(id)
-
-    let expenseData = {
+    await db.findOneAndUpdate({name: 'TheGreatKhan'}, {expenses: {_id: id}}, {
         name: req.body.name,
-        amount: req.body.cost, 
+        amount: req.body.amount,
         description: req.body.description
-    };
-
-    //let item = await db.findById(_id)
-    //console.log(item)
-    //let update = await db.findOneAndUpdate(id, expenseData, {runvalidators: true});
-    //await update.save();
+    })
 
     next(res.redirect('/account'));
 })

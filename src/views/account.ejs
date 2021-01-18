@@ -14,13 +14,13 @@
          <div id='expensesItem'>
             <h3> <%= element.name %> </h3>
             <ul>
-                <li>Total in R: <%= element.amount%></li>
+                <li>Total in R: <%= element.total%></li>
                 <li> Description: <%= element.description %></li>
             </ul>
             <form action="/delete/<%= element._id %>?_method=DELETE" method="POST">
                 <button>Delete</button>
             </form>  
-            <form action="/account/edit/:<%= element.id %>?_method "method="GET">
+            <form action="/account/edit/<%= element.id %>" method="GET">
                 <button>Edit</button>
             </form>
         </div>   

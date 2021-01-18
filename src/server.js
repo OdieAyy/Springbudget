@@ -1,12 +1,13 @@
-const mongoose = require('mongoose')
 const express = require('express')
 const port = process.env.NODE_ENV || 3000
 const router = require('./router/routes')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const ejs = require('ejs')
+const db = require('./db/config')
 
 const app = express({urlencoded: true})
+
 
 app.use(bodyParser.urlencoded( {extended: true} ))
 app.use( methodOverride('_method') )
